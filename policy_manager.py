@@ -5,6 +5,7 @@ myclient = pymongo.MongoClient("mongodb+srv://bogdan:Cemaifaci5%3F@mongo.jpa8i.m
 
 database_politics = myclient["Politici"]
 collection_politics = database_politics["database_for_politics"]
+agents = database_politics["agents"]
 
 
 def insert_policy(data):

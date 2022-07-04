@@ -22,6 +22,16 @@ def handle_exception(e):
     return response
 
 
+@main.route('/show_agents', methods=['GET'])
+@token_required
+def show_agents(current_user):
+    lista = []
+    for x in policy_manager.agents.find():
+        lista.append(x)
+    agents = json_util.dumps(lista, indent=4)
+    return agents
+
+
 @main.route('/show_policies', methods=['GET'])
 @token_required
 def show_policies(current_user):
