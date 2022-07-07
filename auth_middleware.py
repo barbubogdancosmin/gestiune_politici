@@ -18,9 +18,9 @@ def token_required(f):
                    }, 401
         try:
             data = jwt.decode(token, "SecretString", algorithms=["HS256"])
-            print(data)
+            #print(data)
             current_user = Admin.get(Admin.admin_user == data["admin_user"])
-            print("current user: ", current_user)
+            #print("current user: ", current_user)
             if current_user is None:
                 return {
                            "message": "Invalid Authentication token!",

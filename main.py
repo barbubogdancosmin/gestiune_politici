@@ -6,20 +6,9 @@ from auth_middleware import token_required
 from bson import json_util
 from flask import json
 from werkzeug.exceptions import HTTPException
+from bson import ObjectId
 
 main = Blueprint('main', __name__)
-
-
-@main.errorhandler(HTTPException)
-def handle_exception(e):
-    response = e.get_response()
-    response.data = json.dumps({
-        "code": e.code,
-        "name": e.name,
-        "description": e.description,
-    })
-    response.content_type = "application/json"
-    return response
 
 
 @main.route('/show_agents', methods=['GET'])
@@ -45,16 +34,17 @@ def show_policies(current_user):
 @main.route('/show_policy/<id>', methods=['GET'])
 @token_required
 def show_policy(current_user, id):
-    if policy_manager.collection_politics.find_one({'_id': id}):
-        return policy_manager.collection_politics.find_one({'_id': id})
-    else:
-        return 'Id not in database'
+    for x in policy_manager.collection_politics.find():
+        if x['_id'] == int(id):
+            return json_util.dumps(x, indent=4)
 
 
 @main.route('/insert', methods=['POST'])
 @token_required
 def insert(current_user):
     data = request.json
+    for elem in data['rules']:
+        elem['rule_id'] = int(elem['rule_id'])
     policy_manager.insert_policy(data)
     return data
 
@@ -69,8 +59,10 @@ def update(current_user):
 @main.route('/delete/<id>', methods=['DELETE'])
 @token_required
 def delete(curent_user, id):
-    policy_manager.collection_politics.delete_one({'_id': id})
-    return '204'
+    for x in policy_manager.collection_politics.find():
+        if x['_id'] == int(id):
+            policy_manager.collection_politics.delete_one({'_id': x['_id']})
+            return '204'
 
 
 app = create_app()
